@@ -36,5 +36,49 @@ router.get('/:id', (req, res) => {
 
 });
 
+router.post('/', (req, res) => {
+
+    const actionInfo = req.body;
+
+    actionDb.insert(actionInfo)
+        .then(result => {
+            res.status(201).json(result);
+        })
+        .catch(err => {
+            res.status(400).json({ error: "There was a problem..."})
+        })
+});
+
+
+router.put('/:id', (req, res) => {
+
+    const id = req.params.id;
+    const changes = req.body;
+
+    actionDb.update(id, changes)
+        .then(result => {
+            res.status(200).json(result);
+        })
+        .catch(err => {
+            res.status(500).json({ error: "The action information could not be modified." })
+        })
+
+})
+
+
+router.delete('/:id', (req, res) => {
+    const id = req.params.id;
+
+    actionDb.remove(id)
+        .then(count => {
+            res.status(200).json({ message: 'The action has been removed' });
+        })
+        .catch(err => {
+            res.status(404).json({ message: "The action could not be removed." })
+        })
+
+});
+
+
 
 module.exports = router;
