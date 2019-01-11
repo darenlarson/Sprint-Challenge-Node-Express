@@ -36,17 +36,27 @@ router.get('/:id', (req, res) => {
 router.get('/actions/:id', (req, res) => {
 
     const id = req.params.id;
-    
-    projectDb.getProjectActions(id)
-        .then(projectActions => {
-            if(projectActions) {
-                res.status(200).json(projectActions);
+
+    projectDb.get(id)
+        .then(project => {
+            if (project) {
+                projectDb.getProjectActions(id)
+                    .then(projectActions => {
+                        if (projectActions.length > 0) {
+                            res.status(200).json(projectActions);
+                        } else {
+                            res.status(200).json({ message: "This project currently has no actions." });
+                        }
+                    })
+                    .catch(err => {
+                        res.status({ error: "The project actions could not be retrieved. Please try again." });
+                    });
             } else {
-                res.status(404).json({ message: "The project actions with the specified ID does not exist" });
+                res.status(500).json({ message: "Something went wrong. Please try again." });
             }
         })
         .catch(err => {
-            res.status(500).json({ error: "The project actions information could not be retrieved." })
+            res.status(500).json({ error: "It appears this project does not exist." });
         })
 
 });
@@ -56,13 +66,20 @@ router.post('/', (req, res) => {
 
     const projectInfo = req.body;
 
-    projectDb.insert(projectInfo)
-        .then(result => {
-            res.status(201).json(result);
-        })
-        .catch(err => {
-            res.status(400).json({ error: "There was a problem..."})
-        })
+    if (!projectInfo.description || !projectInfo.name) {
+        res.status(500).json({ error: "The project was not created. Please ensure you provide a name and description." });
+    } else if (projectInfo.name.length > 127) {
+        res.status(500).json({ error: "The name must be 128 characters or less." });
+    } else {
+        projectDb.insert(projectInfo)
+            .then(newProject => {
+                res.status(201).json({ message: "The project was successfully created", project: newProject });
+            })
+            .catch(err => {
+                res.status(400).json({ error: "There was a problem. The project was not created." })
+            })
+    }
+
 });
 
 
@@ -71,14 +88,19 @@ router.put('/:id', (req, res) => {
     const id = req.params.id;
     const changes = req.body;
 
-    projectDb.update(id, changes)
-        .then(result => {
-            res.status(200).json(result);
-        })
-        .catch(err => {
-            res.status(500).json({ error: "The project information could not be modified." })
-        })
-
+    if (!changes.name || !changes.description) {
+        res.status(500).json({ error: "The project was not modified. Please ensure you provide a name, and description." });
+    } else if (changes.name.length > 127) {
+        res.status(500).json({ error: "The name must be 128 characters or less." });
+    } else {
+        projectDb.update(id, changes)
+            .then(editedProject => {
+                res.status(200).json({ message: "The project was successfully modified", action: editedProject });
+            })
+            .catch(err => {
+                res.status(500).json({ error: "The action information could not be modified. Please try again." })
+            })
+    }
 });
 
 
@@ -87,7 +109,11 @@ router.delete('/:id', (req, res) => {
 
     projectDb.remove(id)
         .then(count => {
-            res.status(200).json({ message: 'The project has been removed' });
+            if (count) {
+                res.status(200).json({ message: "The project was successfully removed." });
+            } else {
+                res.status(404).json({ message: "The project was not removed. Did you provide a valid ID?" });
+            }
         })
         .catch(err => {
             res.status(404).json({ message: "The project could not be removed." })
