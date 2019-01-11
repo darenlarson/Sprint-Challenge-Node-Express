@@ -26,13 +26,25 @@ Demonstrate your understanding of this Sprint's concepts by answering the follow
 
 - [ ] Mention two parts of Express that you learned about this week.
 
+Express is a framework that works on Node.js that adds a lot of functionality such as routing and middleware support. Express makes it easier and cleaner to make routes. It also has ample support for middleware. However, it is a minimalist framework that requires some setup and customization, unlike some other framework solutions.
+
 - [ ] Describe Middleware?
+
+Middleware, which are usually just functions, can be used in Express to add more functionality. Most code in Express is in fact middleware. You can use middleware to add layers to your server. For example, you can create custom middleware that changes the req or res objects before your routes do anything with them.
 
 - [ ] Describe a Resource?
 
+A resource is everything that you are managing in your application. For example, projects and actions are resources that are are managing.
+
 - [ ] What can the API return to help clients know if a request was successful?
 
+An API can return whatever we design it to return. We can return status codes, which are uniform on the web, each indicating what happened when a client sends a request. For example, codes in the 200's means the request was successful, 400's mean there was an issue, etc.
+
+We can also send a custom response that adds more detail about what may have happened.
+
 - [ ] How can we partition our application into sub-applications?
+
+We can separate out our server, routes, and middleware into separate sub-applications, then import them into one file. This helps to keep the code cleaner. The end result is that each file is responsible for handling one particular feature, functionality, or resource.
 
 ## Project Setup
 
