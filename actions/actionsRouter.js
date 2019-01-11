@@ -85,18 +85,19 @@ router.delete('/:id', (req, res) => {
     actionDb.get(id)
         .then(action => {
             deletedAction = action;
+            
+            actionDb.remove(id)
+                .then(count => {
+                    res.status(200).json({ message: "This action has been removed", removedAction: deletedAction });
+                })
+                .catch(err => {
+                    res.status(404).json({ message: "The action could not be removed." })
+                })
         })
         .catch(err => {
             res.status(404).json({ error: "The action for the provided ID could not be found." });
         })
 
-    actionDb.remove(id)
-        .then(count => {
-            res.status(200).json({ message: "This action has been removed", removedAction: deletedAction });
-        })
-        .catch(err => {
-            res.status(404).json({ message: "The action could not be removed." })
-        })
 
 });
 
