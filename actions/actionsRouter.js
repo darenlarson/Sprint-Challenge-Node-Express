@@ -24,11 +24,7 @@ router.get('/:id', (req, res) => {
 
     actionDb.get(id)
         .then(action => {
-            if(action) {
-                res.status(200).json(action);
-            } else {
-                res.status(404).json({ message: "The action with the specified ID does not exist" });
-            }
+            res.status(200).json(action);
         })
         .catch(err => {
             res.status(404).json({ error: "The action for the provided ID could not be found." });

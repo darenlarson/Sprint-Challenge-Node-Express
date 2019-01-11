@@ -24,14 +24,10 @@ router.get('/:id', (req, res) => {
     
     projectDb.get(id)
         .then(project => {
-            if(project) {
-                res.status(200).json(project);
-            } else {
-                res.status(404).json({ message: "The project with the specified ID does not exist" });
-            }
+            res.status(200).json(project);
         })
         .catch(err => {
-            res.status(500).json({ error: "The project information could not be retrieved." })
+            res.status(500).json({ error: "The project with the specified ID does not exist" })
         })
 
 });
